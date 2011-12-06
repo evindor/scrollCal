@@ -7,13 +7,15 @@
     <link rel="stylesheet" href="css/layout.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <link rel="stylesheet" href="css/scrollCal.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <script type="text/javascript" charset="utf-8">
-      $('#date').scrollCal()
+      $(function() {
+        $('#date').scrollCal();
+      });
     </script>
   </head>
   <body>
     <div class="wrapper">
       <div class="field">
-        <label for="date">Дата вылета:</label><input type="text" name="вфеу" value="" id="date">
+        <label for="date">Дата вылета:</label><input type="text" name="date" value="" id="date" data-month="2" data-year="2012">
       </div>
     </div>
   </body>

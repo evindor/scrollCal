@@ -1,0 +1,31 @@
+.scrollCal {
+  position: absolute;
+  background: #fff;
+  min-width: 360px;
+  min-height: 360px;
+  -webkit-box-shadow: #333 0px 1px 5px;
+  -moz-box-shadow: #333 0px 1px 5px;
+  box-shadow: #333 0px 1px 5px;
+  font-size: 12px;
+}
+
+.scrollCal div {
+  position: relative;
+}
+
+.scrollCal .scrollCal__mainFrame {
+  display: inline-block;
+  vertical-align: top;
+  width: 200px;
+}
+
+.scrollCal .scrollCal__monthFrame, .scrollCal .scrollCal__yearFrame {
+  width: 70px;
+  background: #ccc;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.scrollCal .scrollCal__monthFrame a, .scrollCal .scrollCal__yearFrame a {
+  display: block;
+}
