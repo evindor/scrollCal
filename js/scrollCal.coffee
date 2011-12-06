@@ -3,7 +3,7 @@ $ = jQuery
 $.fn.extend
   scrollCal: (options) ->
     settings =
-      months: 3
+      yearRange: [1990, 2024] 
       
     settings = $.extend settings, options
     return @each () ->
@@ -23,9 +23,9 @@ class ScrollCal
     @year = @$el.data('year') || @CURRENT_DATE.getFullYear()
     
     @createCal()
-    $('.scrollCal__mainFrame').html @generateCal(@year, @month)
+    $('.scrollCal__mainFrame').html @generateMonthsCalForYear(@year)
     $('.scrollCal__monthFrame').html @generateMonthSlider()
-    $('.scrollCal__yearFrame').html @generateYearSlider(@year)
+    $('.scrollCal__yearFrame').html @generateYearSlider(@settings.yearRange)
     
     $('.scrollCal').offset(
       left: $(@element).offset().left
@@ -38,7 +38,7 @@ class ScrollCal
                   <div class='scrollCal__yearFrame'></div>
                 </div>")
                 
-  generateCal: (year, month) ->
+  generateMonthCal: (year, month) ->
     firstDay = new Date year, month, 1
     startingDay = (firstDay.getDay() + 6) % 7
     monthLength = @MONTH_DAYS[month]
@@ -72,6 +72,12 @@ class ScrollCal
         html.push "</tr><tr>"
     html.push "</tr></table>"
     html.join ""
+  
+  generateMonthsCalForYear: (year) ->
+    html = []
+    for m in [0..11]
+      html.push @generateMonthCal(year, m)
+    html.join ""
     
   generateMonthSlider: () ->
     html = []
@@ -79,9 +85,9 @@ class ScrollCal
       html.push "<a class='scrollCal__month-item'>#{month}</a>"
     html.join ""
     
-  generateYearSlider: (year) ->
+  generateYearSlider: (yearRange) ->
     html = []
-    for y in [year-6..year+6]
+    for y in [yearRange[0]..yearRange[1]]
       html.push "<a class='scrollCal__year-item'>#{y}</a>"
     html.join ""
     

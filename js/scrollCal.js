@@ -5,7 +5,7 @@
     scrollCal: function(options) {
       var settings;
       settings = {
-        months: 3
+        yearRange: [1990, 2024]
       };
       settings = $.extend(settings, options);
       return this.each(function() {
@@ -27,9 +27,9 @@
       this.month = this.$el.data('month') || this.CURRENT_DATE.getMonth();
       this.year = this.$el.data('year') || this.CURRENT_DATE.getFullYear();
       this.createCal();
-      $('.scrollCal__mainFrame').html(this.generateCal(this.year, this.month));
+      $('.scrollCal__mainFrame').html(this.generateMonthsCalForYear(this.year));
       $('.scrollCal__monthFrame').html(this.generateMonthSlider());
-      $('.scrollCal__yearFrame').html(this.generateYearSlider(this.year));
+      $('.scrollCal__yearFrame').html(this.generateYearSlider(this.settings.yearRange));
       $('.scrollCal').offset({
         left: $(this.element).offset().left
       });
@@ -37,7 +37,7 @@
     ScrollCal.prototype.createCal = function() {
       return this.$el.after("<div class='scrollCal'>                  <div class='scrollCal__mainFrame'></div>                  <div class='scrollCal__monthFrame'></div>                  <div class='scrollCal__yearFrame'></div>                </div>");
     };
-    ScrollCal.prototype.generateCal = function(year, month) {
+    ScrollCal.prototype.generateMonthCal = function(year, month) {
       var day, firstDay, html, monthLength, monthName, startingDay, week, weekday, _i, _len, _ref;
       firstDay = new Date(year, month, 1);
       startingDay = (firstDay.getDay() + 6) % 7;
@@ -77,6 +77,14 @@
       html.push("</tr></table>");
       return html.join("");
     };
+    ScrollCal.prototype.generateMonthsCalForYear = function(year) {
+      var html, m;
+      html = [];
+      for (m = 0; m <= 11; m++) {
+        html.push(this.generateMonthCal(year, m));
+      }
+      return html.join("");
+    };
     ScrollCal.prototype.generateMonthSlider = function() {
       var html, month, _i, _len, _ref;
       html = [];
@@ -87,10 +95,10 @@
       }
       return html.join("");
     };
-    ScrollCal.prototype.generateYearSlider = function(year) {
+    ScrollCal.prototype.generateYearSlider = function(yearRange) {
       var html, y, _ref, _ref2;
       html = [];
-      for (y = _ref = year - 6, _ref2 = year + 6; _ref <= _ref2 ? y <= _ref2 : y >= _ref2; _ref <= _ref2 ? y++ : y--) {
+      for (y = _ref = yearRange[0], _ref2 = yearRange[1]; _ref <= _ref2 ? y <= _ref2 : y >= _ref2; _ref <= _ref2 ? y++ : y--) {
         html.push("<a class='scrollCal__year-item'>" + y + "</a>");
       }
       return html.join("");

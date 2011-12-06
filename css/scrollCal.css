@@ -17,6 +17,8 @@
   display: inline-block;
   vertical-align: top;
   width: 200px;
+  height: 250px;
+  overflow: hidden;
 }
 
 .scrollCal .scrollCal__monthFrame, .scrollCal .scrollCal__yearFrame {
@@ -24,6 +26,8 @@
   background: #ccc;
   display: inline-block;
   vertical-align: top;
+  height: 250px;
+  overflow: hidden;
 }
 
 .scrollCal .scrollCal__monthFrame a, .scrollCal .scrollCal__yearFrame a {
