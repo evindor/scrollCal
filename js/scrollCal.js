@@ -33,9 +33,44 @@
       $('.scrollCal').offset({
         left: $(this.element).offset().left
       });
+      $('.scrollCal__mainFrame').bind("mousewheel", function(e, delta) {
+        var k, mh, sh, st;
+        e.preventDefault();
+        st = $(this).scrollTop();
+        $(this).scrollTop(st - Math.ceil(delta * 100));
+        sh = $('.scrollCal__calendar-wrapper').height();
+        mh = $('.scrollCal__monthFrame').height();
+        k = mh / sh;
+        return $('.scrollCal__month-indicator').css({
+          top: st * k
+        });
+      });
+      $('.scrollCal__monthFrame').bind("mousewheel", function(e, delta) {
+        var indicator, k, mh, sh, st;
+        e.preventDefault();
+        indicator = $(this).find('.scrollCal__month-indicator');
+        st = parseInt(indicator.css('top'));
+        sh = $('.scrollCal__calendar-wrapper').height();
+        mh = $('.scrollCal__monthFrame').height();
+        k = sh / mh;
+        if (st >= 0 && st <= mh - 50) {
+          $(this).find('.scrollCal__month-indicator').css('top', st - Math.floor(delta * 100));
+          return $('.scrollCal__mainFrame').scrollTop(st * k);
+        } else if (st < 0) {
+          return $(this).find('.scrollCal__month-indicator').css('top', 0);
+        } else if (st > mh - 50) {
+          return $(this).find('.scrollCal__month-indicator').css('top', mh - 50);
+        }
+      });
+      $('.scrollCal__yearFrame').bind("mousewheel", function(e, delta) {
+        var st;
+        e.preventDefault();
+        st = $(this).scrollTop();
+        return $(this).scrollTop(st - Math.ceil(delta * 100));
+      });
     }
     ScrollCal.prototype.createCal = function() {
-      return this.$el.after("<div class='scrollCal'>                  <div class='scrollCal__mainFrame'></div>                  <div class='scrollCal__monthFrame'></div>                  <div class='scrollCal__yearFrame'></div>                </div>");
+      return this.$el.after("<div class='scrollCal'>                  <div class='scrollCalSection scrollCal__mainFrame'></div>                  <div class='scrollCalSection scrollCal__monthFrame'></div>                  <div class='scrollCalSection scrollCal__yearFrame'></div>                </div>");
     };
     ScrollCal.prototype.generateMonthCal = function(year, month) {
       var day, firstDay, html, monthLength, monthName, startingDay, week, weekday, _i, _len, _ref;
@@ -80,9 +115,11 @@
     ScrollCal.prototype.generateMonthsCalForYear = function(year) {
       var html, m;
       html = [];
+      html.push("<div class='scrollCal__calendar-wrapper'>");
       for (m = 0; m <= 11; m++) {
         html.push(this.generateMonthCal(year, m));
       }
+      html.push("</div>");
       return html.join("");
     };
     ScrollCal.prototype.generateMonthSlider = function() {
@@ -93,6 +130,7 @@
         month = _ref[_i];
         html.push("<a class='scrollCal__month-item'>" + month + "</a>");
       }
+      html.push("<div class='scrollCal__month-indicator'></div>");
       return html.join("");
     };
     ScrollCal.prototype.generateYearSlider = function(yearRange) {

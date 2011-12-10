@@ -28,8 +28,18 @@
   vertical-align: top;
   height: 250px;
   overflow: hidden;
+  position: relative;
 }
 
 .scrollCal .scrollCal__monthFrame a, .scrollCal .scrollCal__yearFrame a {
   display: block;
+}
+
+.scrollCal .scrollCal__month-indicator {
+  position: absolute;
+  width: 100%;
+  height: 50px;
+  background: rgba(0,0,0, 0.3);
+  top: 0;
+  left: 0;
 }

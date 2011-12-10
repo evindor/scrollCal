@@ -31,11 +31,40 @@ class ScrollCal
       left: $(@element).offset().left
     )
     
+    $('.scrollCal__mainFrame').bind "mousewheel", (e, delta) ->
+      e.preventDefault()
+      st = $(this).scrollTop()
+      $(this).scrollTop(st - Math.ceil(delta*100))
+      sh = $('.scrollCal__calendar-wrapper').height()
+      mh = $('.scrollCal__monthFrame').height()
+      k  = mh/sh
+      $('.scrollCal__month-indicator').css({top: st*k})
+    
+    $('.scrollCal__monthFrame').bind "mousewheel", (e, delta) ->
+      e.preventDefault()
+      indicator = $(this).find('.scrollCal__month-indicator')
+      st = parseInt indicator.css('top')
+      sh = $('.scrollCal__calendar-wrapper').height()
+      mh = $('.scrollCal__monthFrame').height()
+      k  = sh/mh
+      if st >= 0 && st <= mh - 50
+        $(this).find('.scrollCal__month-indicator').css('top', st - Math.floor(delta*100))
+        $('.scrollCal__mainFrame').scrollTop(st * k)
+      else if st < 0
+        $(this).find('.scrollCal__month-indicator').css('top', 0)
+      else if st > mh - 50
+        $(this).find('.scrollCal__month-indicator').css('top', mh - 50)
+        
+    $('.scrollCal__yearFrame').bind "mousewheel", (e, delta) ->
+      e.preventDefault()
+      st = $(this).scrollTop()
+      $(this).scrollTop(st - Math.ceil(delta*100))
+    
   createCal: () ->
     @$el.after("<div class='scrollCal'>
-                  <div class='scrollCal__mainFrame'></div>
-                  <div class='scrollCal__monthFrame'></div>
-                  <div class='scrollCal__yearFrame'></div>
+                  <div class='scrollCalSection scrollCal__mainFrame'></div>
+                  <div class='scrollCalSection scrollCal__monthFrame'></div>
+                  <div class='scrollCalSection scrollCal__yearFrame'></div>
                 </div>")
                 
   generateMonthCal: (year, month) ->
@@ -75,14 +104,17 @@ class ScrollCal
   
   generateMonthsCalForYear: (year) ->
     html = []
+    html.push "<div class='scrollCal__calendar-wrapper'>"
     for m in [0..11]
       html.push @generateMonthCal(year, m)
+    html.push "</div>"
     html.join ""
     
   generateMonthSlider: () ->
     html = []
     for month in @MONTH_LABELS
       html.push "<a class='scrollCal__month-item'>#{month}</a>"
+    html.push "<div class='scrollCal__month-indicator'></div>"
     html.join ""
     
   generateYearSlider: (yearRange) ->
