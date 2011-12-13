@@ -49,10 +49,10 @@
       $('.scrollCal').offset({
         left: $(this.element).offset().left
       });
-      $('.scrollCal__mainFrame').bind("mousewheel", function(e) {
-        var delta, k, mh, sh, st;
+      $('.scrollCal__mainFrame').bind("mousewheel", function(e, delta) {
+        var k, mh, sh, st;
         e.preventDefault();
-        delta = e.originalEvent.wheelDelta;
+        delta = delta * 120;
         st = $(this).scrollTop();
         $(this).scrollTop(st - delta);
         sh = $('.scrollCal__calendar-wrapper').outerHeight();
@@ -62,10 +62,10 @@
           top: st * k
         });
       });
-      $('.scrollCal__monthFrame').bind("mousewheel", function(e) {
-        var delta, indicator, k, mh, posForIndicator, sh, st;
+      $('.scrollCal__monthFrame').bind("mousewheel", function(e, delta) {
+        var indicator, k, mh, posForIndicator, sh, st;
         e.preventDefault();
-        delta = Math.floor(e.originalEvent.wheelDelta / 2);
+        delta = delta * 50;
         indicator = $(this).find('.scrollCal__month-indicator');
         st = parseInt(indicator.css('top'));
         sh = $('.scrollCal__calendar-wrapper').outerHeight();
@@ -83,10 +83,8 @@
           return $('.scrollCal__mainFrame').scrollTop(st * k);
         }
       });
-      $('.scrollCal__yearFrame').bind("mousewheel", __bind(function(e) {
-        var delta;
+      $('.scrollCal__yearFrame').bind("mousewheel", __bind(function(e, delta) {
         e.preventDefault();
-        delta = e.originalEvent.wheelDelta;
         if (delta < 0) {
           if (this.year < this.settings.yearRange[1]) {
             $('.scrollCal__mainFrame').html(this.generateMonthsCalForYear(this.year + 1));

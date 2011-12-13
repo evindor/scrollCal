@@ -44,9 +44,10 @@ class ScrollCal
       left: $(@element).offset().left
     )
     
-    $('.scrollCal__mainFrame').bind "mousewheel", (e) ->
+    $('.scrollCal__mainFrame').bind "mousewheel", (e, delta) ->
       e.preventDefault()
-      delta = e.originalEvent.wheelDelta
+      delta = delta * 120
+      #delta = e.originalEvent.wheelDelta
       st = $(this).scrollTop()
       $(this).scrollTop(st - delta)
       sh = $('.scrollCal__calendar-wrapper').outerHeight()
@@ -54,9 +55,10 @@ class ScrollCal
       k  = mh/sh
       $('.scrollCal__month-indicator').css({top: st*k})
     
-    $('.scrollCal__monthFrame').bind "mousewheel", (e) ->
+    $('.scrollCal__monthFrame').bind "mousewheel", (e, delta) ->
       e.preventDefault()
-      delta = Math.floor e.originalEvent.wheelDelta / 2
+      delta = delta * 50
+      #delta = Math.floor e.originalEvent.wheelDelta / 2
       indicator = $(this).find('.scrollCal__month-indicator')
       st = parseInt indicator.css('top')
       sh = $('.scrollCal__calendar-wrapper').outerHeight()
@@ -72,9 +74,9 @@ class ScrollCal
         $(this).find('.scrollCal__month-indicator').css('top', posForIndicator)
         $('.scrollCal__mainFrame').scrollTop(st * k)
         
-    $('.scrollCal__yearFrame').bind "mousewheel", (e) =>
+    $('.scrollCal__yearFrame').bind "mousewheel", (e, delta) =>
       e.preventDefault()
-      delta = e.originalEvent.wheelDelta
+      #delta = e.originalEvent.wheelDelta
       if delta < 0
         if @year < @settings.yearRange[1]
           $('.scrollCal__mainFrame').html @generateMonthsCalForYear(@year + 1)
