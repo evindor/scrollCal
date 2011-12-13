@@ -2,7 +2,7 @@
   position: absolute;
   background: #fff;
   width: 330px;
-  height: 296px;
+  height: 306px;
   -webkit-box-shadow: #333 0px 1px 5px;
   -moz-box-shadow: #333 0px 1px 5px;
   box-shadow: #333 0px 1px 5px;
@@ -14,6 +14,13 @@
   position: relative;
 }
 
+.scrollCal .scrollCal__weekdays {
+  padding-left: 12px;
+}
+.scrollCal .scrollCal__weekdays td{
+  width: 22px;
+}
+
 .scrollCal .scrollCal__mainFrame {
   display: inline-block;
   vertical-align: top;
@@ -21,6 +28,18 @@
   height: 255px;
   overflow: hidden;
   padding: 10px 12px;
+  box-shadow: inset 1px 1px 6px #666;
+  
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  
+  margin-right: -3px; /*hate those 4px gaps with inline-block*/
+}
+
+.scrollCal .scrollCal__mainFrame tr td.scrollCal__calendar-day:nth-child(n+6),
+.scrollCal .scrollCal__weekdays tr td:nth-child(n+6) {
+  color: red;
 }
 
 .scrollCal .scrollCal__calendar {
@@ -30,24 +49,61 @@
 .scrollCal .scrollCal__monthFrame, .scrollCal .scrollCal__yearFrame {
   width: 50px;
   padding: 0 10px;
-  background: #ccc;
+  background: #ececec;
   display: inline-block;
   vertical-align: top;
   height: 275px;
   overflow: hidden;
   position: relative;
+  
+  box-shadow: inset 1px 1px 6px #666;
+  
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  
+  margin-right: -3px; /*hate those 4px gaps with inline-block*/
 }
 
 .scrollCal .scrollCal__monthFrame a, .scrollCal .scrollCal__yearFrame a {
   display: block;
   height: 23px;
+  position: relative;
+  z-index: 2;
 }
 
-.scrollCal .scrollCal__month-indicator {
+.scrollCal .scrollCal__month-indicator, .scrollCal .scrollCal__year-indicator {
   position: absolute;
-  width: 100%;
+  width: 68px;
   height: 50px;
-  background: rgba(0,0,0, 0.3);
+  z-index: 1;
   top: 0;
-  left: 0;
+  left: 1px;
+  background-image: linear-gradient(bottom, rgb(240,240,240) 40%, rgb(255,255,255) 63%);
+  background-image: -o-linear-gradient(bottom, rgb(240,240,240) 40%, rgb(255,255,255) 63%);
+  background-image: -moz-linear-gradient(bottom, rgb(240,240,240) 40%, rgb(255,255,255) 63%);
+  background-image: -webkit-linear-gradient(bottom, rgb(240,240,240) 40%, rgb(255,255,255) 63%);
+  background-image: -ms-linear-gradient(bottom, rgb(240,240,240) 40%, rgb(255,255,255) 63%);
+
+  background-image: -webkit-gradient(
+  	linear,
+  	left bottom,
+  	left top,
+  	color-stop(0.4, rgb(240,240,240)),
+  	color-stop(0.6, rgb(255,255,255))
+  );
+  
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  
+  -webkit-box-shadow: #999 0px 1px 2px;
+  -moz-box-shadow: #999 0px 1px 2px;
+  box-shadow: #999 0px 1px 2px;
+}
+
+.scrollCal .scrollCal__year-indicator {
+  height: 25px;
+  top: 50%;
+  margin-top: -12px;
 }

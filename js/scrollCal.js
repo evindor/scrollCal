@@ -33,28 +33,30 @@
       $('.scrollCal').offset({
         left: $(this.element).offset().left
       });
-      $('.scrollCal__mainFrame').bind("mousewheel", function(e, delta) {
-        var k, mh, sh, st;
+      $('.scrollCal__mainFrame').bind("mousewheel", function(e) {
+        var delta, k, mh, sh, st;
         e.preventDefault();
+        delta = e.originalEvent.wheelDelta;
         st = $(this).scrollTop();
-        $(this).scrollTop(st - Math.ceil(delta * 100));
-        sh = $('.scrollCal__calendar-wrapper').height();
-        mh = $('.scrollCal__monthFrame').height();
+        $(this).scrollTop(st - delta);
+        sh = $('.scrollCal__calendar-wrapper').outerHeight();
+        mh = $('.scrollCal__monthFrame').outerHeight();
         k = mh / sh;
         return $('.scrollCal__month-indicator').css({
           top: st * k
         });
       });
-      $('.scrollCal__monthFrame').bind("mousewheel", function(e, delta) {
-        var indicator, k, mh, sh, st;
+      $('.scrollCal__monthFrame').bind("mousewheel", function(e) {
+        var delta, indicator, k, mh, sh, st;
         e.preventDefault();
+        delta = e.originalEvent.wheelDelta;
         indicator = $(this).find('.scrollCal__month-indicator');
         st = parseInt(indicator.css('top'));
-        sh = $('.scrollCal__calendar-wrapper').height();
-        mh = $('.scrollCal__monthFrame').height();
+        sh = $('.scrollCal__calendar-wrapper').outerHeight();
+        mh = $('.scrollCal__monthFrame').outerHeight();
         k = sh / mh;
         if (st >= 0 && st <= mh - 50) {
-          $(this).find('.scrollCal__month-indicator').css('top', st - Math.floor(delta * 100));
+          $(this).find('.scrollCal__month-indicator').css('top', st - delta);
           return $('.scrollCal__mainFrame').scrollTop(st * k);
         } else if (st < 0) {
           return $(this).find('.scrollCal__month-indicator').css('top', 0);
@@ -70,10 +72,19 @@
       });
     }
     ScrollCal.prototype.createCal = function() {
-      return this.$el.after("<div class='scrollCal'>                  <div class='scrollCalSection scrollCal__mainFrame'></div>                  <div class='scrollCalSection scrollCal__monthFrame'></div>                  <div class='scrollCalSection scrollCal__yearFrame'></div>                </div>");
+      var day, html, _i, _len, _ref;
+      html = [];
+      html.push("<table><tr>");
+      _ref = this.DAY_LABELS;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        day = _ref[_i];
+        html.push("<td class='scrollCal__calendar-header-day'>" + day + "</td>");
+      }
+      html.push("</tr></table>");
+      return this.$el.after("<div class='scrollCal'>                  <div class='scrollCalSection scrollCal__weekdays'>" + (html.join('')) + "</div>                  <div class='scrollCalSection scrollCal__mainFrame'></div>                  <div class='scrollCalSection scrollCal__monthFrame'></div>                  <div class='scrollCalSection scrollCal__yearFrame'></div>                </div>");
     };
     ScrollCal.prototype.generateMonthCal = function(year, month) {
-      var day, firstDay, html, monthLength, monthName, startingDay, week, weekday, _i, _len, _ref;
+      var day, firstDay, html, monthLength, monthName, startingDay, week, weekday;
       firstDay = new Date(year, month, 1);
       startingDay = (firstDay.getDay() + 6) % 7;
       monthLength = this.MONTH_DAYS[month];
@@ -87,11 +98,6 @@
       html.push("<table class='scrollCal__calendar'>");
       html.push("<tr><th colspan='7'>" + monthName + "</th></tr>");
       html.push("<tr class='scrollCal__calendar-header'>");
-      _ref = this.DAY_LABELS;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        day = _ref[_i];
-        html.push("<td class='scrollCal__calendar-header-day'>" + day + "</td>");
-      }
       html.push("</tr><tr>");
       day = 1;
       for (week = 0; week <= 6; week++) {
@@ -125,17 +131,18 @@
     ScrollCal.prototype.generateMonthSlider = function() {
       var html, month, _i, _len, _ref;
       html = [];
+      html.push("<div class='scrollCal__month-indicator'></div>");
       _ref = this.MONTH_LABELS;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         month = _ref[_i];
         html.push("<a class='scrollCal__month-item'>" + month + "</a>");
       }
-      html.push("<div class='scrollCal__month-indicator'></div>");
       return html.join("");
     };
     ScrollCal.prototype.generateYearSlider = function(yearRange) {
       var html, y, _ref, _ref2;
       html = [];
+      html.push("<div class='scrollCal__year-indicator'></div>");
       for (y = _ref = yearRange[0], _ref2 = yearRange[1]; _ref <= _ref2 ? y <= _ref2 : y >= _ref2; _ref <= _ref2 ? y++ : y--) {
         html.push("<a class='scrollCal__year-item'>" + y + "</a>");
       }
