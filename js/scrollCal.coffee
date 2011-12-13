@@ -7,7 +7,15 @@ $.fn.extend
       
     settings = $.extend settings, options
     return @each () ->
-      new ScrollCal this, settings
+      $(this).bind "click.showScrollCal", (e) =>
+        e.stopPropagation()
+        $('div.scrollCal').remove() if $('div.scrollCal').length
+        new ScrollCal this, settings
+        
+        $('body').bind "click.hideScrollCal", (e) ->
+          if !$(e.target).closest('div.scrollCal').length
+            $('div.scrollCal').remove()
+            $('body').unbind "click.hideScrollCal"
 
 class ScrollCal
   DAY_LABELS: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
@@ -21,6 +29,9 @@ class ScrollCal
     @day = @$el.data('day') || (@CURRENT_DATE.getDay() + 8) % 7
     @month = @$el.data('month') || @CURRENT_DATE.getMonth()
     @year = @$el.data('year') || @CURRENT_DATE.getFullYear()
+    
+    @timestamp = new Date().getTime()
+    @$el.addClass("scrollCal_input_#{@timestamp}")
     
     @createCal()
     $('.scrollCal__mainFrame').html @generateMonthsCalForYear(@year)
@@ -72,8 +83,6 @@ class ScrollCal
         if @year > @settings.yearRange[0]
           $('.scrollCal__mainFrame').html @generateMonthsCalForYear(@year - 1)
           @setYearInScroll(@year - 1)
-      #st = $(this).scrollTop()
-      #$(this).scrollTop(st - delta)
     
     $('.scrollCal__mainFrame').delegate "td.scrollCal__calendar-day", "click", (e) =>
       day = parseInt $(e.target).text()
@@ -93,7 +102,7 @@ class ScrollCal
     for day in @DAY_LABELS
       html.push "<td class='scrollCal__calendar-header-day'>#{day}</td>"
     html.push "</tr></table>"
-    @$el.after("<div class='scrollCal'>
+    @$el.after("<div class='scrollCal scrollCal_calendar_#{@timestamp}'>
                   <div class='scrollCalSection scrollCal__weekdays'>#{html.join('')}</div>
                   <div class='scrollCalSection scrollCal__mainFrame'></div>
                   <div class='scrollCalSection scrollCal__monthFrame'></div>
@@ -163,4 +172,3 @@ class ScrollCal
     delta = indicatorPosition - yearPosition
     $('.scrollCal__year-wrapper').css('top', delta)
     @year = year
-  

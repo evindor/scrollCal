@@ -10,7 +10,19 @@
       };
       settings = $.extend(settings, options);
       return this.each(function() {
-        return new ScrollCal(this, settings);
+        return $(this).bind("click.showScrollCal", __bind(function(e) {
+          e.stopPropagation();
+          if ($('div.scrollCal').length) {
+            $('div.scrollCal').remove();
+          }
+          new ScrollCal(this, settings);
+          return $('body').bind("click.hideScrollCal", function(e) {
+            if (!$(e.target).closest('div.scrollCal').length) {
+              $('div.scrollCal').remove();
+              return $('body').unbind("click.hideScrollCal");
+            }
+          });
+        }, this));
       });
     }
   });
@@ -27,6 +39,8 @@
       this.day = this.$el.data('day') || (this.CURRENT_DATE.getDay() + 8) % 7;
       this.month = this.$el.data('month') || this.CURRENT_DATE.getMonth();
       this.year = this.$el.data('year') || this.CURRENT_DATE.getFullYear();
+      this.timestamp = new Date().getTime();
+      this.$el.addClass("scrollCal_input_" + this.timestamp);
       this.createCal();
       $('.scrollCal__mainFrame').html(this.generateMonthsCalForYear(this.year));
       $('.scrollCal__monthFrame').html(this.generateMonthSlider());
@@ -110,7 +124,7 @@
         html.push("<td class='scrollCal__calendar-header-day'>" + day + "</td>");
       }
       html.push("</tr></table>");
-      return this.$el.after("<div class='scrollCal'>                  <div class='scrollCalSection scrollCal__weekdays'>" + (html.join('')) + "</div>                  <div class='scrollCalSection scrollCal__mainFrame'></div>                  <div class='scrollCalSection scrollCal__monthFrame'></div>                  <div class='scrollCalSection scrollCal__yearFrame'></div>                </div>");
+      return this.$el.after("<div class='scrollCal scrollCal_calendar_" + this.timestamp + "'>                  <div class='scrollCalSection scrollCal__weekdays'>" + (html.join('')) + "</div>                  <div class='scrollCalSection scrollCal__mainFrame'></div>                  <div class='scrollCalSection scrollCal__monthFrame'></div>                  <div class='scrollCalSection scrollCal__yearFrame'></div>                </div>");
     };
     ScrollCal.prototype.generateMonthCal = function(year, month) {
       var day, firstDay, html, monthLength, monthName, startingDay, week, weekday;
