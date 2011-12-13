@@ -1,5 +1,6 @@
 (function() {
   var $, ScrollCal;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   $ = jQuery;
   $.fn.extend({
     scrollCal: function(options) {
@@ -30,6 +31,7 @@
       $('.scrollCal__mainFrame').html(this.generateMonthsCalForYear(this.year));
       $('.scrollCal__monthFrame').html(this.generateMonthSlider());
       $('.scrollCal__yearFrame').html(this.generateYearSlider(this.settings.yearRange));
+      this.setYearInScroll(this.year);
       $('.scrollCal').offset({
         left: $(this.element).offset().left
       });
@@ -47,29 +49,56 @@
         });
       });
       $('.scrollCal__monthFrame').bind("mousewheel", function(e) {
-        var delta, indicator, k, mh, sh, st;
+        var delta, indicator, k, mh, posForIndicator, sh, st;
         e.preventDefault();
-        delta = e.originalEvent.wheelDelta;
+        delta = Math.floor(e.originalEvent.wheelDelta / 2);
         indicator = $(this).find('.scrollCal__month-indicator');
         st = parseInt(indicator.css('top'));
         sh = $('.scrollCal__calendar-wrapper').outerHeight();
         mh = $('.scrollCal__monthFrame').outerHeight();
         k = sh / mh;
-        if (st >= 0 && st <= mh - 50) {
-          $(this).find('.scrollCal__month-indicator').css('top', st - delta);
+        if (st - delta <= 0) {
+          posForIndicator = 1;
+        } else if (st - delta >= mh - 35) {
+          posForIndicator = mh - 36;
+        } else {
+          posForIndicator = st - delta;
+        }
+        if (st >= 0 && st <= mh - 35) {
+          $(this).find('.scrollCal__month-indicator').css('top', posForIndicator);
           return $('.scrollCal__mainFrame').scrollTop(st * k);
-        } else if (st < 0) {
-          return $(this).find('.scrollCal__month-indicator').css('top', 0);
-        } else if (st > mh - 50) {
-          return $(this).find('.scrollCal__month-indicator').css('top', mh - 50);
         }
       });
-      $('.scrollCal__yearFrame').bind("mousewheel", function(e, delta) {
-        var st;
+      $('.scrollCal__yearFrame').bind("mousewheel", __bind(function(e) {
+        var delta;
         e.preventDefault();
-        st = $(this).scrollTop();
-        return $(this).scrollTop(st - Math.ceil(delta * 100));
-      });
+        delta = e.originalEvent.wheelDelta;
+        if (delta < 0) {
+          if (this.year < this.settings.yearRange[1]) {
+            $('.scrollCal__mainFrame').html(this.generateMonthsCalForYear(this.year + 1));
+            return this.setYearInScroll(this.year + 1);
+          }
+        } else {
+          if (this.year > this.settings.yearRange[0]) {
+            $('.scrollCal__mainFrame').html(this.generateMonthsCalForYear(this.year - 1));
+            return this.setYearInScroll(this.year - 1);
+          }
+        }
+      }, this));
+      $('.scrollCal__mainFrame').delegate("td.scrollCal__calendar-day", "click", __bind(function(e) {
+        var dateString, day, month, year;
+        day = parseInt($(e.target).text());
+        month = $(e.target).closest('.scrollCal__calendar').data('month');
+        year = $(e.target).closest('.scrollCal__calendar-wrapper').data('year');
+        dateString = "" + day + " " + (this.MONTH_LABELS[month].substr(0, 3)) + ". " + year;
+        return this.$el.val(dateString);
+      }, this));
+      $('.scrollCal__yearFrame').delegate("a.scrollCal__year-item", "click", __bind(function(e) {
+        var year;
+        year = parseInt($(e.target).data('year'));
+        $('.scrollCal__mainFrame').html(this.generateMonthsCalForYear(year));
+        return this.setYearInScroll(year);
+      }, this));
     }
     ScrollCal.prototype.createCal = function() {
       var day, html, _i, _len, _ref;
@@ -95,7 +124,7 @@
       }
       monthName = this.MONTH_LABELS[month];
       html = [];
-      html.push("<table class='scrollCal__calendar'>");
+      html.push("<table class='scrollCal__calendar' data-month='" + month + "'>");
       html.push("<tr><th colspan='7'>" + monthName + "</th></tr>");
       html.push("<tr class='scrollCal__calendar-header'>");
       html.push("</tr><tr>");
@@ -121,7 +150,7 @@
     ScrollCal.prototype.generateMonthsCalForYear = function(year) {
       var html, m;
       html = [];
-      html.push("<div class='scrollCal__calendar-wrapper'>");
+      html.push("<div class='scrollCal__calendar-wrapper' data-year='" + year + "'>");
       for (m = 0; m <= 11; m++) {
         html.push(this.generateMonthCal(year, m));
       }
@@ -142,11 +171,21 @@
     ScrollCal.prototype.generateYearSlider = function(yearRange) {
       var html, y, _ref, _ref2;
       html = [];
-      html.push("<div class='scrollCal__year-indicator'></div>");
+      html.push("<div class='scrollCal__year-indicator'></div><div class='scrollCal__year-wrapper'>");
       for (y = _ref = yearRange[0], _ref2 = yearRange[1]; _ref <= _ref2 ? y <= _ref2 : y >= _ref2; _ref <= _ref2 ? y++ : y--) {
-        html.push("<a class='scrollCal__year-item'>" + y + "</a>");
+        html.push("<a class='scrollCal__year-item scrollCal__year_" + y + "' data-year='" + y + "'>" + y + "</a>");
       }
+      html.push("</div>");
       return html.join("");
+    };
+    ScrollCal.prototype.setYearInScroll = function(year) {
+      var delta, indicatorPosition, yearPosition, yearToSet;
+      yearToSet = $(".scrollCal__year-item.scrollCal__year_" + year);
+      yearPosition = yearToSet.position().top;
+      indicatorPosition = $('.scrollCal__year-indicator').position().top - 10;
+      delta = indicatorPosition - yearPosition;
+      $('.scrollCal__year-wrapper').css('top', delta);
+      return this.year = year;
     };
     return ScrollCal;
   })();
